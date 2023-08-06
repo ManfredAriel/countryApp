@@ -4,6 +4,7 @@ import { Observable, catchError, delay, map, of, tap } from 'rxjs';
 
 import { Country } from '../interfaces/country';
 import { CacheStore } from '../interfaces/cache-storage-interface';
+import { Region } from '../interfaces/rigeon.type';
 
 @Injectable({ providedIn: 'root' })
 export class CountriesService {
@@ -13,8 +14,9 @@ export class CountriesService {
     public cacheStore: CacheStore = {
         byCapital: { term: "", countries: [] },
         byCountries: { term: "", countries: [] },
-        byRegion: { region: "", countries: [] }
+        byRegion: { region: "", countries: [] },
     };
+
 
     constructor(private http: HttpClient) {
         console.log('CountriesService init');
@@ -38,18 +40,26 @@ export class CountriesService {
 
     searchCapital(term: string): Observable<Country[]> {
         const url = `${this.apiUrl}/capital/${term}`;
-        return this.getCountriesResquest(url);
+        return this.getCountriesResquest(url)
+            .pipe(
+                tap(countries => this.cacheStore.byCapital = { term, countries })
+            );
     }
 
     searchCountry(term: string): Observable<Country[]> {
         const url = `${this.apiUrl}/name/${term}`;
-        return this.getCountriesResquest(url);
+        return this.getCountriesResquest(url)
+            .pipe(
+                tap(countries => this.cacheStore.byCountries = { term, countries })
+            );;
 
     }
 
-    searchRegion(term: string): Observable<Country[]> {
-        const url = `${this.apiUrl}/region/${term}`;
-        return this.getCountriesResquest(url);
-
+    searchRegion(region: Region): Observable<Country[]> {
+        const url = `${this.apiUrl}/region/${region}`;
+        return this.getCountriesResquest(url)
+            .pipe(
+                tap(countries => this.cacheStore.byRegion = { region, countries })
+            );;
     }
 }
