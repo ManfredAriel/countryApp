@@ -12,6 +12,7 @@ export class ByCapitalPageComponent {
 
   public countries: Country[] = [];
   public isLoading: boolean = false;
+  
 
   constructor(private countriesServices: CountriesService) { }
   searchByCapital(term: string): void {
